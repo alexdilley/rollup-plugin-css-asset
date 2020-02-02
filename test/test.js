@@ -1,5 +1,5 @@
-const { rollup } = require('rollup');
 const { join } = require('path');
+const { rollup } = require('rollup');
 const test = require('tape');
 const plugin = require('..');
 

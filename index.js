@@ -1,7 +1,7 @@
+const path = require('path');
 const CleanCSS = require('clean-css');
 const Concat = require('concat-with-sourcemaps');
 const convert = require('convert-source-map');
-const path = require('path');
 const { createFilter } = require('rollup-pluginutils');
 
 module.exports = function css(options = {}) {
