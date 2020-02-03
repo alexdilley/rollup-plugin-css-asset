@@ -68,7 +68,7 @@ module.exports = function css(options = {}) {
           }
         );
 
-        bundle[fileName].source += sourceMapComment;
+        bundle[fileName].source += `\n${sourceMapComment}`;
         this.emitFile({
           type: 'asset',
           source: output.sourceMap.toString(),

@@ -58,15 +58,20 @@ test('name', async t => {
 });
 
 test('sourcemap', async t => {
-  t.plan(2);
+  t.plan(3);
 
   const bundle = await rollup({ ...options, plugins: [plugin()] });
   const { output } = await bundle.generate({
     ...outputOptions,
     sourcemap: true,
   });
-  const [, , map] = output;
+  const [, css, map] = output;
 
+  t.match(
+    css.source.split('\n').reverse()[0],
+    /sourceMappingURL/,
+    'is linked to'
+  );
   t.isNot(map, null, 'is emitted');
   t.match(map.source, /sourcesContent/, 'inlines source');
 });
