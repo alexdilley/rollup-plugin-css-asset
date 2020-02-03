@@ -1,27 +1,23 @@
-const { join } = require('path');
+const { basename, join } = require('path');
 const { rollup } = require('rollup');
 const test = require('tape');
 const plugin = require('..');
 
-const inputOptions = { input: join(__dirname, 'fixtures/main.js') };
+const options = { input: join(__dirname, 'fixtures/main.js') };
 const outputOptions = {
-  file: 'bundle.js',
+  entryFileNames: '[name]-[hash].js',
   assetFileNames: 'assets/[name]-[hash][extname]', // the default
 };
 
 test('default', async t => {
   t.plan(4);
 
-  const bundle = await rollup({ ...inputOptions, plugins: [plugin()] });
+  const bundle = await rollup({ ...options, plugins: [plugin()] });
   const { output } = await bundle.generate(outputOptions);
   const [, css] = output;
 
   t.is(css.type, 'asset', 'is an asset');
-  t.match(
-    css.fileName,
-    /^assets\/bundle-\w{8}\.css$/,
-    'has same name as entry'
-  );
+  t.match(css.fileName, /^assets\/main-\w{8}\.css$/, 'has same name as entry');
   t.equal(css.source, 'body{margin:0}', 'has minified content');
   t.doesNotMatch(
     css.source,
@@ -30,12 +26,27 @@ test('default', async t => {
   );
 });
 
+test('file', async t => {
+  t.plan(2);
+
+  const bundle = await rollup({ ...options, plugins: [plugin()] });
+  const { output } = await bundle.generate({ file: 'bundle.js' });
+  const [js, css] = output;
+
+  t.match(css.fileName, /\/bundle-\w{8}\.css$/, 'has same name as output');
+  t.notEqual(
+    basename(css.fileName),
+    basename(js.fileName),
+    'has different hash from entry'
+  );
+});
+
 test('name', async t => {
   t.plan(1);
 
   const bundle = await rollup({
-    ...inputOptions,
-    plugins: [plugin({ name: 'bundle' })],
+    ...options,
+    plugins: [plugin({ name: 'styles' })],
   });
   const { output } = await bundle.generate({
     ...outputOptions,
@@ -43,13 +54,13 @@ test('name', async t => {
   });
   const [, css] = output;
 
-  t.equals(css.fileName, 'bundle.css');
+  t.equals(css.fileName, 'styles.css');
 });
 
 test('sourcemap', async t => {
   t.plan(2);
 
-  const bundle = await rollup({ ...inputOptions, plugins: [plugin()] });
+  const bundle = await rollup({ ...options, plugins: [plugin()] });
   const { output } = await bundle.generate({
     ...outputOptions,
     sourcemap: true,
@@ -63,7 +74,7 @@ test('sourcemap', async t => {
 test('sourcemapExcludeSources', async t => {
   t.plan(1);
 
-  const bundle = await rollup({ ...inputOptions, plugins: [plugin()] });
+  const bundle = await rollup({ ...options, plugins: [plugin()] });
   const { output } = await bundle.generate({
     ...outputOptions,
     sourcemap: true,

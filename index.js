@@ -35,8 +35,10 @@ module.exports = function css(options = {}) {
         styles.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
       }
 
-      const file = opts.file || path.join(opts.dir, entry.fileName);
-      const name = options.name || path.basename(file, path.extname(file));
+      const { file } = opts;
+      const name =
+        options.name ||
+        (file ? path.basename(file, path.extname(file)) : entry.name);
       const referenceId = this.emitFile({
         type: 'asset',
         // Basis for calculating hash.
