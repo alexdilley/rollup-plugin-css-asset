@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-css-asset",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Bundle CSS as a Rollup asset",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "lint": "run-s lint:all:*",
     "test": "tape test/*.js | tap-spec"
   },
-  "repository": "https://github.com/alexdilley/rollup-plugin-css",
+  "repository": "https://github.com/alexdilley/rollup-plugin-css-asset",
   "keywords": [
     "rollup-plugin",
     "css"
