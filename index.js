@@ -45,6 +45,9 @@ module.exports = function css(options = {}) {
         source: styles.reduce((acc, { code }) => acc + code, ''),
         name: `${name}.css`,
       });
+      if(options.cleanCSS===false){
+        return ;
+      }
       const fileName = this.getFileName(referenceId);
       const mapFileName = `${fileName}.map`;
 
@@ -53,10 +56,19 @@ module.exports = function css(options = {}) {
       styles.forEach(({ id, code, map }) => concat.add(id, code, map));
 
       // Minify.
-      const output = new CleanCSS({
-        sourceMap: true,
-        sourceMapInlineSources: !opts.sourcemapExcludeSources,
-      }).minify(concat.content, concat.sourceMap);
+      var output;
+      if(typeof options.cleanCSS==="object"){
+        output= new CleanCSS({
+          ...options.cleanCSS,
+          sourceMap: true,
+          sourceMapInlineSources: !opts.sourcemapExcludeSources,
+        }).minify(concat.content, concat.sourceMap);
+      }else{
+        output= new CleanCSS({
+          sourceMap: true,
+          sourceMapInlineSources: !opts.sourcemapExcludeSources,
+        }).minify(concat.content, concat.sourceMap);
+      }
 
       // Bundle.
       bundle[fileName].source = output.styles;
